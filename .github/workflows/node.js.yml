@@ -26,4 +26,6 @@ jobs:
         cache: 'npm'
     - run: npm ci
     - run: npm run build
-    - run: npm run lint
+    # --no-cache option is used due to EsLint bug: https://github.com/eslint/eslint/issues/19322
+    - run: npm run lint -- --no-cache
+
