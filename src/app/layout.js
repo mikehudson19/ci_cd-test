@@ -17,8 +17,7 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }) {
-    const test = 'a'
-    var test2 = 'b'
+
   return (
     <html lang="en">
       <body
