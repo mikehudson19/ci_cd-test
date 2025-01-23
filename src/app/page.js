@@ -21,6 +21,7 @@ export default function Home() {
             .
           </li>
           <li>Save and see your changes instantly.</li>
+          <li>Change from test branch</li>
           <li>Small change</li>
         </ol>
 
