@@ -26,6 +26,7 @@ jobs:
       - name: Deploy via PM2
         run: |
           ssh -o "StrictHostKeyChecking=no" ${{ secrets.USER }}@${{secrets.IP }} << EOF
+            echo "Deploying commit $GITHUB_SHA"
             cd /var/www/ci_cd-test
             sudo npm run build
             pm2 restart 0 --silent
