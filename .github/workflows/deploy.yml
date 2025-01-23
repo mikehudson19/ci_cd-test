@@ -20,7 +20,7 @@ jobs:
         run: |
           ssh -o "StrictHostKeyChecking=no" ${{ secrets.USER }}@${{secrets.IP }} << EOF
             cd /var/www/ci_cd-test
-            sudo git pull origin main
+            sudo git pull origin master
             sudo npm run build
             pm2 restart 0
           EOF
