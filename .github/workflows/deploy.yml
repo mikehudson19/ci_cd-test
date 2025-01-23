@@ -33,7 +33,7 @@ jobs:
         run: scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa -r .next/* ${{ secrets.USER }}@${{ secrets.IP }}:/home/ubuntu/.next
       - name: Move .next folder
         run: |
-          sudo rm -r /var/www/ci_cd-test/.next
+#          sudo rm -r /var/www/ci_cd-test/.next
           sudo mv /home/ubuntu/.next /var/www/ci_cd-test
       - name: Restart server
         run: ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${{ secrets.USER }}@${{ secrets.IP }} "cd /var/www/ci_cd-test && pm2 restart 0"
