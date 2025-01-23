@@ -30,6 +30,6 @@ jobs:
           cat ~/.ssh/id_rsa
           ls -l ~/.ssh/id_rsa
       - name: Deploy using SCP
-        run: scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa -r .next ${{ secrets.USER }}@${{ secrets.IP }}:/var/www/ci_cd-test
+        run: scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa -r .next/* ${{ secrets.USER }}@${{ secrets.IP }}:/var/www/ci_cd-test/test
       - name: Restart server
         run: ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${{ secrets.USER }}@${{ secrets.IP }} "cd /var/www/ci_cd-test && pm2 restart 0"
