@@ -16,11 +16,17 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Connect to server and deploy
+      - name: Pull from Github repo
         run: |
           ssh -o "StrictHostKeyChecking=no" ${{ secrets.USER }}@${{secrets.IP }} << EOF
             cd /var/www/ci_cd-test
             sudo git pull origin master
+          EOF
+
+      - name: Deploy via PM2
+        run: |
+          ssh -o "StrictHostKeyChecking=no" ${{ secrets.USER }}@${{secrets.IP }} << EOF
+            cd /var/www/ci_cd-test
             sudo npm run build
             pm2 restart 0 --silent
           EOF
