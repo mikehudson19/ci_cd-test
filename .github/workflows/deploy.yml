@@ -5,6 +5,28 @@ on:
     branches: [ "master" ]
 
 jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [ 18.19.1 ]
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - run: npm ci
+      - run: npm run build
+      # --no-cache option is used due to EsLint bug: https://github.com/eslint/eslint/issues/19322
+      - run: npm run lint -- --no-cache
+
   deploy:
     runs-on: ubuntu-latest
     steps:
@@ -26,7 +48,7 @@ jobs:
       - name: Deploy via PM2
         run: |
           ssh -o "StrictHostKeyChecking=no" ${{ secrets.USER }}@${{secrets.IP }} << EOF
-            echo "Deploying commit $GITHUB_SHA"
+            echo "Deploying commit: $GITHUB_SHA"
             cd /var/www/ci_cd-test
             sudo npm run build
             pm2 restart 0 --silent
