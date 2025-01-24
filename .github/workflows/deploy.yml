@@ -51,5 +51,5 @@ jobs:
             echo "Deploying commit: $GITHUB_SHA"
             cd /var/www/ci_cd-test
             sudo npm run build
-            pm2 restart 0 --silent
+            pm2 restart 0
           EOF
