@@ -23,10 +23,10 @@ jobs:
         run: echo "${{ secrets.REPO_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
       - name: Build Docker image
-        run: docker build -t ghcr.io/${{ github.repository_owner }}${{ github.event.repository.name }}:${{ steps.vars.outputs.sha_short }} .
+        run: docker build -t ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:${{ steps.vars.outputs.sha_short }} .
 
       - name: Push Docker image
-        run: docker push ghcr.io/${{ github.repository_owner }}${{ github.event.repository.name }}:${{ steps.vars.outputs.sha_short }}
+        run: docker push ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:${{ steps.vars.outputs.sha_short }}
 
 #  deploy:
 #    needs: build
@@ -38,7 +38,7 @@ jobs:
 #
 #      - name: Update docker-compose.yml with new image tag
 #        run: |
-#          sed -i 's|image: ghcr.io/${{ github.repository_owner }}${{ github.event.repository.name }}:.*|image: ghcr.io/${{ github.repository_owner }}${{ github.event.repository.name }}:${{ needs.build.outputs.image_tag }}|'
+#          sed -i 's|image: ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:.*|image: ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:${{ needs.build.outputs.image_tag }}|'
 #  docker-compose.yml
 #
 #  - name: Pull and deploy UI service
@@ -48,7 +48,7 @@ jobs:
 #
 #  - name: Clean old images
 #    run: |
-#      images=$(docker images ghcr.io/${{ github.repository_owner }}${{ github.event.repository.name }} --format "{{.ID}}" | grep -v "<none>")
+#      images=$(docker images ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }} --format "{{.ID}}" | grep -v "<none>")
 #      count=$(echo "$images" | wc -l)
 #      if [ $count -gt 2 ]; then
 #        echo "$images" | tail -n +3 | xargs -r docker rmi -f || true
