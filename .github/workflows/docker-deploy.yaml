@@ -41,7 +41,7 @@ jobs:
           cd ~/cicd-test
           pwd
           sed -i 's|image: ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:.*|image: ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:${{ needs.build.outputs.image_tag }}|' docker-compose.yaml
-
+          cat docker-compose.yaml
       - name: Pull and deploy UI service
         run: |
           cd ~/cicd-test
