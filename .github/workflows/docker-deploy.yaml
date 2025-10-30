@@ -28,28 +28,30 @@ jobs:
       - name: Push Docker image
         run: docker push ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:${{ steps.vars.outputs.sha_short }}
 
-#  deploy:
-#    needs: build
-#    runs-on: self-hosted
+  deploy:
+    needs: build
+    runs-on: self-hosted
+
+    steps:
+      - name: Login to GitHub Container Registry
+        run: echo "${{ secrets.REPO_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Navigate to directory
+        run: cd cicd-test
+
+      - name: Update docker-compose.yml with new image tag
+        run: |
+          sed -i 's|image: ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:.*|image: ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:${{ needs.build.outputs.image_tag }}|' docker-compose.yml
+
+      - name: Pull and deploy UI service
+        run: |
+          docker compose pull cicd-test-ui
+          docker compose up -d --no-deps ui
 #
-#    steps:
-#      - name: Login to GitHub Container Registry
-#        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-#
-#      - name: Update docker-compose.yml with new image tag
+#      - name: Clean old images
 #        run: |
-#          sed -i 's|image: ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:.*|image: ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:${{ needs.build.outputs.image_tag }}|'
-#  docker-compose.yml
-#
-#  - name: Pull and deploy UI service
-#    run: |
-#      docker compose pull ui
-#      docker compose up -d --no-deps ui
-#
-#  - name: Clean old images
-#    run: |
-#      images=$(docker images ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }} --format "{{.ID}}" | grep -v "<none>")
-#      count=$(echo "$images" | wc -l)
-#      if [ $count -gt 2 ]; then
-#        echo "$images" | tail -n +3 | xargs -r docker rmi -f || true
-#      fi
+#          images=$(docker images ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }} --format "{{.ID}}" | grep -v "<none>")
+#          count=$(echo "$images" | wc -l)
+#          if [ $count -gt 2 ]; then
+#            echo "$images" | tail -n +3 | xargs -r docker rmi -f || true
+#          fi
