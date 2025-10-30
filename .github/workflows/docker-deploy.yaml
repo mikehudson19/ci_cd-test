@@ -36,19 +36,21 @@ jobs:
       - name: Login to GitHub Container Registry
         run: echo "${{ secrets.REPO_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
+      - name: CD into working directory
+        run: |
+          cd ~/cicd-test
+
       - name: Update docker-compose.yml with new image tag
         run: |
-          cd ~/cicd-test
-          pwd
           sed -i 's|image: ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:.*|image: ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:${{ needs.build.outputs.image_tag }}|' docker-compose.yaml
-          cat docker-compose.yaml
+          echo image: ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:${{ needs.build.outputs.image_tag }}
+
       - name: Pull and deploy UI service
         run: |
-          cd ~/cicd-test
           docker compose pull ui
           docker compose up -d --no-deps ui
 
-      - name: Clean old images
+      - name: Clean up old images
         run: |
           images=$(docker images ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }} --format "{{.ID}}" | grep -v "<none>")
           count=$(echo "$images" | wc -l)
