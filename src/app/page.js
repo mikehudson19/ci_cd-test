@@ -25,6 +25,7 @@ export default function Home() {
           <li>Small change</li>
           <li>Another Small change</li>
           <li>Another Small change 2</li>
+          <li>Another Small change 3</li>
         </ol>
 
         <div className="flex gap-4 items-center flex-col sm:flex-row">
