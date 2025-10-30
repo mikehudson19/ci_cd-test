@@ -1,0 +1,55 @@
+name: Docker Deploy UI Test
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      image_tag: ${{ steps.vars.outputs.sha_short }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set commit SHA variable
+        id: vars
+        run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
+      - name: Login to GitHub Container Registry
+        run: echo "${{ secrets.REPO_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Build Docker image
+        run: docker build -t ghcr.io/${{ github.repository_owner }}/ui:${{ steps.vars.outputs.sha_short }} .
+
+      - name: Push Docker image
+        run: docker push ghcr.io/${{ github.repository_owner }}/ui:${{ steps.vars.outputs.sha_short }}
+
+#  deploy:
+#    needs: build
+#    runs-on: self-hosted
+#
+#    steps:
+#      - name: Login to GitHub Container Registry
+#        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+#
+#      - name: Update docker-compose.yml with new image tag
+#        run: |
+#          sed -i 's|image: ghcr.io/${{ github.repository_owner }}/ui:.*|image: ghcr.io/${{ github.repository_owner }}/ui:${{ needs.build.outputs.image_tag }}|'
+#  docker-compose.yml
+#
+#  - name: Pull and deploy UI service
+#    run: |
+#      docker compose pull ui
+#      docker compose up -d --no-deps ui
+#
+#  - name: Clean old images
+#    run: |
+#      images=$(docker images ghcr.io/${{ github.repository_owner }}/ui --format "{{.ID}}" | grep -v "<none>")
+#      count=$(echo "$images" | wc -l)
+#      if [ $count -gt 2 ]; then
+#        echo "$images" | tail -n +3 | xargs -r docker rmi -f || true
+#      fi
