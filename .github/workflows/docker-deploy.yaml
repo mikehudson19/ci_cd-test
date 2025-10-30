@@ -44,6 +44,7 @@ jobs:
 
       - name: Pull and deploy UI service
         run: |
+          cd ~/cicd-test
           docker compose pull cicd-test-ui
           docker compose up -d --no-deps ui
 #
