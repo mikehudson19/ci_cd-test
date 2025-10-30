@@ -47,11 +47,11 @@ jobs:
           cd ~/cicd-test
           docker compose pull ui
           docker compose up -d --no-deps ui
-#
-#      - name: Clean old images
-#        run: |
-#          images=$(docker images ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }} --format "{{.ID}}" | grep -v "<none>")
-#          count=$(echo "$images" | wc -l)
-#          if [ $count -gt 2 ]; then
-#            echo "$images" | tail -n +3 | xargs -r docker rmi -f || true
-#          fi
+
+      - name: Clean old images
+        run: |
+          images=$(docker images ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }} --format "{{.ID}}" | grep -v "<none>")
+          count=$(echo "$images" | wc -l)
+          if [ $count -gt 2 ]; then
+            echo "$images" | tail -n +3 | xargs -r docker rmi -f || true
+          fi
